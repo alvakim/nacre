@@ -10,7 +10,7 @@ if(!title.length){
 	head.append(title);
 }
 
-const version = '3.5.0';
+const version = '3.5.1';
 
 let surfing = [];
 let selectedItems = new Set();
@@ -124,7 +124,10 @@ head.append($($C.html.style({id:'simpleViewBasicStyle'}, '/*simple view basic*/\
 				},
 				' .description':{
 					fontSize:pc(80),
-					margin:px(8, 40)
+					margin:px(8, 40),
+					' .itemRef':{
+						textDecoration:css.underline
+					}
 				},
 				' .itemDocs':{
 					margin:px(3), 
@@ -138,7 +141,10 @@ head.append($($C.html.style({id:'simpleViewBasicStyle'}, '/*simple view basic*/\
 		' .nacreModalDialog':{
 			' .description':{
 				fontSize:pc(90),
-				margin:px(8, 40)
+				margin:px(8, 40),
+				' .itemRef':{
+					textDecoration:css.underline
+				}
 			}
 		},
 		' .relationsTree':{
@@ -333,11 +339,11 @@ function mainTable(kb, searchString){
 		apply(items, (itm,id)=>div({'class':'pnlItem'},
 			span({'class':'itemName itemRef', 'data-target':id}, itm.name || id),
 			itm.name?' '+span({'class':'itemID', title:'item ID'}, `[${id}]`):null,
-			itemRelations(kb, itm, id),
-			itm.description?div({'class':'description'},
-				itm.description instanceof Array?apply(itm.description, d=>div(d)):itm.description
-			):null,
-			itemDocs(itm)
+			itemRelations(kb, itm, id)
+			// itm.description?div({'class':'description'},
+			// 	itm.description instanceof Array?apply(itm.description, d=>div(d)):itm.description
+			// ):null,
+			// itemDocs(itm)
 		)),
 		div(
 			p('Классы отношений: '),
@@ -544,14 +550,22 @@ function itemDescription(itm){
 	}
 
 	const lines = (itm.description instanceof Array?itm.description:[itm.description])
-		.map(d=>d.replace(/<ref\s+book="([^"]+)"\s*\/>/g, /*`[$1]`*/ (sMt, bookID)=>{
-			const doc = getDoc(bookID);
-			return span('[', a({
-				href:doc.doc.url,
-				title:doc.doc.title,
-				target:'_blank'
-			}, doc.idx), ']');
-		}))
+		.map(d=>d
+			.replace(/<ref\s+book="([^"]+)"\s*\/>/g, /*`[$1]`*/ (sMt, bookID)=>{
+				const doc = getDoc(bookID);
+				return span('[', a({
+					href:doc.doc.url,
+					title:doc.doc.title,
+					target:'_blank'
+				}, doc.idx), ']');
+			})
+			.replace(/<ref\s+item="([^"]+)"\s*\/>/g, (sMt, itmID)=>{
+				return span({
+					'class':'itemRef',
+					'data-target':itmID
+				}, itmID);
+			})
+		)
 	;
 	return div({'class':'description'},
 		apply(lines, d=>div(d))

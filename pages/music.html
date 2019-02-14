@@ -79,10 +79,19 @@ SimpleView(KB({
 		}},
 		{id:'series'},
 		{id:'synthesizer'},
-		{id:'FMSynth', relations:{is:'synthesizer'}},
+		{id:'FMSynth', relations:{is:'synthesizer'},
+			description:[
+				'Синтезатор, похожий на <ref item="dx7"/>.',
+				'Читать здесь: <ref book="wYamaha"/>.'
+			],
+			docs:[
+				{id:'wYamaha', url:'https://yamaha.com', title:'Yamaha'}
+			]
+		},
 		{id:'Yamaha', relations:{is:'organization'},
 			attributes:{address:'Japan'},
 			queries:'yamahaProducts',
+			description:'Производитель <ref item="dx7"/>.',
 			docs:[
 				{url:'3d.html#cam360', title:'А вот тут можно про 360-градусные камеры почитать'}
 			]
