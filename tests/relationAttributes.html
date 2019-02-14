@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="../js/lib/jquery-3.1.1.min.js"></script>
+<script src="../js/lib/clarino.min.js"></script>
+<script src="../js/lib/jsonquarry.js"></script>
+<script type="module" src="js/kbtest.js"></script>
+
+<script type="module">
+Test(KB({
+	name:"Relation Attributes",
+	relationTypes:[
+		{id:'soldIn', name:'продается в', inversion:'продает', description:'Указывает на продавца товара'}
+	],
+	attributeNames:{
+		priceRub:'Цена(руб)'
+	},
+	items:[
+		{id:'organization'},
+		{id:'megaShop', relations:{is:'organization'}},
+		//{id:'superCamera', relations:{soldIn:'megaShop{priceRub:10000}'}}
+		{id:'superCamera', relations:{soldIn:'megaShop{priceRub:10000}'}}
+	]
+}), (kb)=>{
+	const {assert,equalArrays,arrayDiff} = Test;
+
+	console.log(kb.items);
+
+
+	{let rels = kb.relationsBySource.superCamera.soldIn;
+		assert(rels.length==1, 'Error 1.1');
+		let attrs = rels[0].attributes;
+		assert(attrs.priceRub==10000, 'Error 1.2');
+	}
+
+});
+</script>
+</head>
+<body></body>
+</html>

@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="../js/lib/jquery-3.1.1.min.js"></script>
+<script src="../js/lib/clarino.min.js"></script>
+<script src="../js/lib/jsonquarry.js"></script>
+<script type="module" src="js/kbtest.js"></script>
+
+<script type="module">
+Test(KB({
+	name:"Simple KB",
+	items:[
+		{id:'proglang', name:'Programming Language'},
+		{id:'Python', relations:{is:'proglang'}},
+		{id:'JavaScript', relations:{is:'proglang'}},
+		{id:'fpLang', name:'Functional language'},
+		{id:'Lisp', relations:{is:'fpLang'}}
+	]
+}), (kb)=>{
+	const {assert,equalArrays,arrayDiff} = Test;
+	//console.log(Object.keys(kb.relationTypes).join(','));
+
+	(v=>assert(v.match(/\d\.\d\.\d/), `Bad version number: "${v}"`))(kb.version);
+	(v=>assert(v=='Simple KB', `Bad KB name: "${v}"`))(kb.name);
+	assert(kb.items.Python.relations.is=='proglang', 'Bad "Python" item relations');
+	assert(kb.getItemName('fpLang')=='Functional language', 'Bad "fpLang" name');
+	assert(kb.itemsList.length==5, 'Bad items list size');
+	assert(JSON.stringify(kb.getStatistics())=='{"totalItems":5,"totalRelations":3}', 'Bad statistics');
+
+	{let items = kb.getRelatedItems('proglang')[0];
+		assert(items.length==2, `Bad related items list length: ${items.length}`);
+	}
+
+	(diff=>(
+		assert(diff.missing.length==0, `Missing relation types: ${diff.missing.join(', ')}`), 
+		assert(diff.excess.length==0, `Excess relation types: ${diff.excess.join(', ')}`)
+	))(arrayDiff(Object.keys(kb.relationTypes), 'is;instanceOf;uses;includes;like;comesFrom;intendedFor;refTo'.split(';')));
+
+	(rels=>(
+		(lng=>assert(lng==2, `Error 3.1: bad relations list length: ${lng}`))(rels.length), 
+		(src=>assert(equalArrays(src, 'Python;JavaScript'.split(';')), `Error 3.2: bad relation sources: ${src.join(', ')}`))(rels.map(x=>x.src))
+	))(kb.relationsByTarget['proglang']['may be']);
+
+	(rels=>(
+		(lng=>assert(lng==1, `Error 4.1: bad relations list length: ${lng}`))(rels.length),
+		(trg=>assert(trg=='proglang', `Error 4.2: bad target: "${trg}"`))(rels[0].trg)
+	))(kb.relationsBySource.Python.is);
+
+	(items=>(
+		(names=>(
+			(lng=>assert(lng==2, `Error 5.1: bad search result count: ${lng}`))(names.length),
+			assert(equalArrays(names, 'proglang;fpLang'.split(';')), `Error 5.2: bad search result: "${names.join(', ')}"`)
+		))(Object.keys(items))
+	))(kb.searchItems('an'))
+});
+</script>
+</head>
+<body></body>
+</html>

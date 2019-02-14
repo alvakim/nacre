@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="../js/lib/jquery-3.1.1.min.js"></script>
+<script src="../js/lib/clarino.min.js"></script>
+<script src="../js/lib/jsonquarry.js"></script>
+<script type="module" src="../js/kbmain.js"></script>
+
+<script type="module">
+SimpleView(KB({
+	name:"3D-графика",
+	relationTypes:[
+		{id:'writtenOn', name:'написан на', inversion:'язык реализации', description:'Указывает на язык реализации данного ПО'},
+		{id:'implements', name:'реализует', inversion:'реализован на', description:'Указывает на решаемую данным ПО задачу'},
+		{id:'producedBy', name:'произведен', inversion:'производитель', description:'Указывает на производителя ПО'},
+		{id:'soldIn', name:'продается в', inversion:'продает', description:'Указывает на продавца товара'}
+		// {id:'worksOn', name:'работает на', inversion:'платформа для', description:'Указывает на платформу для работы заданного ПО'}
+	],
+	attributeNames:{
+		photoResolution:'Разрешение фото',
+		videoResolution:'Разрешение видео',
+		battCapacity_mAh:'Емкость аккумулятора (мАч)',
+		priceRub:'Цена (руб)',
+		memoryGB:'Объем памяти (ГБайт)',
+		address:'Адрес'
+	},
+	articles:[
+		{id:'top8PhotoStitching', url:'https://veer.tv/blog/top-8-panorama-editing-software-alternatives-to-ptgui/', title:'Top 8 360 Photo Stitching Software Alternative to PTGui'}
+	],
+	items:[
+		{id:'BasicNotion'},
+		{id:'favorite'},
+		{id:'task', name:'Задача', relations:{is:'BasicNotion'}},
+		{id:'software', name:'ПО', relations:{is:'BasicNotion'}},
+		{id:'hardware', name:'Аппаратура', relations:{is:'BasicNotion'}},
+		{id:'proglang', name:'Programming Language', relations:{is:'BasicNotion'}},
+		{id:'function', description:['Функция преобразования'], relations:{is:'BasicNotion'}},
+		{id:'Rendering', relations:{is:'task'}},
+		{id:'standard', relations:{is:'BasicNotion'}},
+		{id:'technique', name:'Методика', relations:{is:'BasicNotion'}},
+		{id:'organization', relations:{is:'BasicNotion'}},
+		{id:'freeSoft', name:'Free software', relations:{is:'software'}},
+		{id:'FOSS', name:'Free and Open-Source software', relations:{is:'freeSoft'}},
+		{id:'paidSoft', relations:{is:'software'}},
+		{id:'shop', name:'магазин', relations:{is:'organization'}},
+		{id:'devTool', name:'Developer Tool', relations:{is:'software'}},
+		{id:'framework', relations:{is:'software'}},
+		{id:'Projection', relations:{is:'BasicNotion', intendedFor:'3DPan'}},
+		{id:'Mercator', name:'Mercator Projection', relations:{is:'CylProj'},
+			description:[
+				'Проекция Меркатора. Цилиндрическая.',
+				'Применятся для сшивания нескольких снимков для создания фотографии с большим углом обзора по горизонтали и вертикали (но если угол по вертикали близок к 180 необходимо выбрать тип проекции “Сфера”).',
+				'Удобна для навигации, т.к. сохраняет углы между курсом судна и меридианами.',
+				'Many major online street mapping services (Bing Maps, OpenStreetMap, Google Maps, MapQuest, Yahoo! Maps, and others) use a variant of the Mercator projection for their map images[8] called Web Mercator or Google Web Mercator.'
+			],
+			docs:[{url:'https://en.wikipedia.org/wiki/Mercator_projection', title:'Wikipedia: Mercator projection'}]
+		},
+		{id:'OrthoProj', name:'Orthographic Projection', relations:{is:'Projection'},
+			description:[
+				'Проекция на плоскость.',
+				'Необходима если вы создаете общий снимок со средним углом обзора по горизонтали и вертикали . Если вы видите что получаются сильные искажения, то попробуйте тип проекции “меркатор” или “цилиндр”.'
+			],
+			docs:[{url:'https://en.wikipedia.org/wiki/Orthographic_projection', title:'Orthographic projection'}]
+		},
+		{id:'CylProj', name:'Cylindrical Projection', relations:{is:'Projection'},
+			description:['Применяется для создания 3D-панорам с большими углами по горизонтали и средними углами по вертикали (около 60).']
+		},
+		{id:'SpherProj', name:'Spherical Projection', relations:{is:'Projection'},
+			description:[
+				'Сферическая (или эквидистантная) проекция',
+				'Необходима для создания интерактивной 3D-панорамы с большими углами обзора по горизонтали и углами близкими к 180 градусов по вертикали.',
+				'У полной сферической проекции панорамы обзор составляет 360 по горизонтали и 180 по вертикали. Следовательно, соотношение сторон должно быть два к одному.'
+			]
+		},
+		{id:'CubeProj', name:'Cube Projection', relations:{is:'Projection'},
+			description:['В этой проекции проще редактировать панораму фотошопом. Часто для этого панораму преобразуют из сферы в куб, редактируют, потом преобразуют, если надо, обратно.']
+		},
+		{id:'WebGL', relations:{is:'standard'}, docs:[
+			{url:'http://limulus.ru/kb/?p=webgl', title:'Limulus KB: WebGL'}
+		]},
+		{id:'quantity', name:'Величина', description:['Измеряемая величина']},
+		{id:'WebVR', relations:{is:'standard'}},
+		{id:'WebAudio', relations:{is:'standard'}},
+		{id:'3DPan', name:'3D-панорама', relations:{is:'task', includes:'3DPanView;3DPanPhoto;3DPanAssembly'},
+			docs:[
+				{url:'https://1panorama.ru/', title:'1panorama: Виртуальные туры в 3d-панорамах'},
+				{url:'https://crocusgroup.ru/3d-tour/', title:'3D Тур - Крокус Сити', description:'Пример реализации'}
+			]
+		}, 
+		{id:'3DPanPhoto', name:'Съемка 3D-панорамы', relations:{is:'task'},
+			docs:[
+				{url:'https://fototips.ru/praktika/sozdanie-3d-panoramy-chast-i-teoriya-i-fotosemka/', title:'3D-панорамы. Часть I: Теория и фотосъемка'}
+			]
+		}, 
+		{id:'3DPanAssembly', name:'Сборка 3D-панорамы', relations:{is:'task'}, 
+			description:['Сборка панорамы из отдельных кадров. Другое название: Photo Stitching.'],
+			docs:[
+					{url:'https://fototips.ru/praktika/sozdanie-3d-panoramy-chast-ii-sborka-fotografij-v-edinuyu-panoramu/', title:'3D-панорамы. Часть II: Сборка фотографий в единую панораму.'},
+					{url:'https://fototips.ru/praktika/sozdanie-3d-panoramy-chast-iii-redaktirovanie-proekcij-i-sozdanie-3d-panoramy/', title:'3D-панорамы. Часть III: Редактирование проекций, создание 3D-панорамы'},
+					'top8PhotoStitching',
+					{url:'https://blogs.systweak.com/2018/09/best-photo-stitching-software-for-windows/', title:'10 Best Photo Stitching Software For Windows'}
+			]
+		},
+		{id:'RMS', relations:{is:'quantity', refTo:'3DPanAssembly'}, 
+			description:['Root mean square (RMS) contrast.'],
+			docs:[
+				{url:'https://en.wikipedia.org/wiki/Contrast_(vision)#RMS_contrast', title:'Wikipedia: RMS contrast'}
+			]
+		},
+		{id:'3DPanView', name:'Отображение 3D-панорамы', relations:{is:'task', uses:'Rendering'}, docs:[
+			{url:'https://threejs.org/examples/?q=dyna#css3d_panorama', title:'Пример реализации на Three.js'},
+			{url:'https://threejs.org/examples/?q=dyna#webgl_materials_cubemap_dynamic', title:'Еще пример реализации на Three.js'}
+		]},
+		{id:'Blender', relations:{is:'FOSS;devTool'}, docs:[
+			{url:'http://limulus.ru/kb/?p=blender', title:'Limulus KB: Blender'}
+		]},
+		{id:'3dsMax', name:'3ds Max', relations:{is:'paidSoft'}},
+		{id:'JavaScript', relations:{is:'proglang'}},
+		{id:'threejs', name:'Three.js', relations:{is:'framework;FOSS', writtenOn:'JavaScript', implements:'3DPanView'}, docs:[
+			{url:'http://limulus.ru/kb/?p=threejs', title:'Limulus KB: Three.js'}
+		]},
+		{id:'Shadertoy', relations:{is:'devTool'},
+			description:['Онлайновая среда разработки. Позволяет создавать шейдерные функции, которые можно потом использовать в собственных скриптах.'],
+			docs:[
+				{url:'https://www.shadertoy.com/', title:'Shadertoy'}
+			]
+		},
+		{id:'Triumph', relations:{is:'organization'},
+			description:['Moscow-based company.']
+		},
+		{id:'YAK', name:'Yuri and Alex Kovelenov', relations:{is:'organization', comesFrom:'Triumph'}},
+		{id:'Blend4Web', relations:{is:'FOSS;framework', producedBy:'Triumph', intendedFor:'Blender;WebGL;WebVR;WebAudio'},
+			description:[
+				'Blend4Web is a free and open source framework for creating and displaying interactive 3D computer graphics in web browsers.',
+				'Ходят слухи, что в связи с переходом главных разработчиков в команду Verge3D проект толком не поддерживается, и потихоньку загибается.'
+			],
+			docs:[
+				{url:'https://www.blend4web.com/ru/', title:'Blend4Web'},
+				{url:'https://en.wikipedia.org/wiki/Blend4Web', title:'Wikipedia: Blend4Web'}
+			]
+		},
+		{id:'Verge3D', relations:{is:'framework;paidSoft', comesFrom:'Blend4Web', producedBy:'YAK', intendedFor:'Blender;3dsMax'},
+			description:[
+				'Verge3D is a real-time renderer and a toolkit used for creating interactive 3D experiences running on websites.',
+				'Есть версии для Blender и для 3ds Max. Имеется бесплатная ознакомительная версия.'
+			],
+			docs:[
+				{url:'https://www.soft8soft.com/verge3d/', title:'Verge3D'},
+				{url:'https://en.wikipedia.org/wiki/Verge3D', title:'Wikipedia: Verge3D'}
+			]
+		},
+		{id:'CubeMap', relations:{is:'technique', uses:'CubeProj', intendedFor:'3DPanView'}, 
+			description:['Методика в трёхмерной компьютерной графике, предназначенная преимущественно для моделирования отражений на поверхности объекта.'],
+			docs:[
+				{url:'https://ru.wikipedia.org/wiki/Кубическая_текстура', title:'Википедия: Кубическая текстура'},
+				{url:'https://en.wikipedia.org/wiki/Cube_mapping', title:'Wikipedia: Cube Mapping'}
+			]
+		},
+		{id:'thing3DPhoto', name:'3D-фотография предметов', relations:{is:'task'}, docs:[
+			{url:'https://www.ecwid.ru/blog/guide-to-360-product-photography.html', title:'Как сделать вращающиеся 3D-фотографии: пошаговая инструкция'}
+		]},
+		{id:'cam360', name:'360-градусная камера', relations:{is:'hardware', intendedFor:'3DPanPhoto'}, docs:[
+			{url:'https://rec360.ru/360-cameras-comparison', title:'Сравнительная таблица 360-градусных камер'},
+			{url:'https://prostotech.com/gadget/7367-10-luchshih-360-gradusnyh-kamer-2018-goda-v-potrebitelskom-segmente.html', title:'10 лучших 360-градусных камер 2018 года в потребительском сегменте'},
+			{url:'https://photar.ru/luchshie-professionalnye-360-gradusnye-kamery-2017-goda/', title:'Лучшие профессиональные 360-градусные камеры 2017 года'}
+		]},
+		{id:'panhead', name:'Панорамная головка', relations:{is:'hardware', intendedFor:'3DPanPhoto'},
+			description:['Специальная головка на штатив, обеспечивающая вращение фотоаппарата вокруг "нодальной точки" (nodal point) - оптического центра объектива.']
+		},
+		{id:'AutopanoGiga', name:'Autopano Giga', relations:{is:'software;paidSoft', intendedFor:'3DPanAssembly'},
+			description:['Программа, позволяющая сшивать отдельные кадры в панораму'],
+			docs:[
+				{url:'http://www.kolor.com/download-autopano-panotour-panorama-virtual-tour-software.html', title:'Триал-версия программы'}
+			]
+		},
+		{id:'Pano2VR', relations:{is:'software;paidSoft', intendedFor:'3DPanAssembly'},
+			docs:[
+				{url:'http://gardengnomesoftware.com/pano2vr_download.php', title:'Триал-версия программы'},
+				'top8PhotoStitching'
+			]
+		},
+		{id:'BSDF', relations:{is:'function', intendedFor:'Rendering'},
+			description:['BSDF - (bidirectional scattering distribution function) функция, определяющая отражение лучей от поверхности под заданным углом. Используется в Cycles rendering engine.']
+		},
+		{id:'UVMapping', name:'UV mapping', relations:{intendedFor:'Rendering'},
+			description:['UV mapping - мэппинг поверхности на текстуру. Буквы U и V обозначают координаты в плоскости текстуры (в то время как X, Y и Z являются координатами в пространстве 3D-объекта.']
+		},
+		{id:'viewFrustrum', name:'Viewing Frustrum', relations:{refTo:'Rendering'},
+			description:['Конус обзора камеры']
+		},
+		{id:'PTGui', relations:{is:'software;paidSoft', intendedFor:'3DPanAssembly'},
+			docs:[{url:'https://www.ptgui.com/', title:'PTGui'}, 'top8PhotoStitching']
+		},
+		{id:'photoshop', name:'Adobe Photoshop', relations:{is:'software;paidSoft', intendedFor:'3DPanAssembly'},
+			description:['Для склеивания панорам использовать меню "File/Automate/Photomerge".'],
+			docs:['top8PhotoStitching']
+		},
+		{id:'Hugin', relations:{is:'software;FOSS', intendedFor:'3DPanAssembly'},
+			description:[
+				'Имеется довольно подробная документация с туториалами.',
+				'Работает заметно медленнее, чем MS ICE, и нестыковки перспективы отрабатывает хуже.',
+				'Зато гораздо больше всяких разнообразных настроек.'
+			],
+			docs:[
+				{url:'http://hugin.sourceforge.net/', title:'Hugin'},
+				'top8PhotoStitching'
+			]
+		},
+		{id:'MSICE', name:'Microsoft Image Composite Editor (MS ICE)', relations:{is:'software;freeSoft;favorite', intendedFor:'3DPanAssembly'},
+			description:[
+				'Бесплатная программа от Microsoft. Проста в использовании, но нет нормальной документации, считается, что все и так интуитивно понятно. Склеивает панорамы довольно неплохо, но иногда крашится из-за недостатка памяти.',
+				'Довольно интеллектуальная - умеет достраивать отсутствующие фрагменты, совмещать картинки, снятые в разной перспективе.'
+			],
+			docs:[
+				{url:'https://www.microsoft.com/en-us/research/product/computational-photography-applications/image-composite-editor/', title:'Microsoft Image Composite Editor'},
+				{url:'http://limulus.ru/kb/?p=msice#', title:'Limulus KB: MS Image Composite Editor (MS ICE)'},
+				'top8PhotoStitching'
+			]
+		},
+		{id:'marzipano', relations:{is:'framework;FOSS', intendedFor:'3DPanView'},
+			docs:[
+				{url:'http://www.marzipano.net/', title:'Marzipano - a 360° viewer for the modern web'},
+				{url:'https://github.com/google/marzipano', title:'Marzipano on GitHub'}
+			]
+		},
+		{id:'GIMP', relations:{is:'FOSS'}},
+		{id:'plugin', relations:{is:'software'},
+			description:['Плагин для работы в составе какого-либо приложения.']
+		},
+		{id:'Scheme', relations:{is:'proglang'}},
+		{id:'Pandora', relations:{is:'freeSoft;plugin', intendedFor:'GIMP;3DPanAssembly', writtenOn:'Scheme'},
+			description:[
+				'Плагин для GIMP, предназначенный для склеивания панорам.',
+				'Склеивает кривоватенько - просто совмещает границы и делает градиентный переход между частями панорамы.'
+			],
+			docs:[
+				{url:'http://www.shallowsky.com/software/pandora/', title:'Pandora: a GIMP Plugin for Making Panoramas'}
+			]
+		},
+		{id:'Autostitch', relations:{is:'freeSoft', intendedFor:'3DPanAssembly'},
+			description:'Довольно примитивная программа. Поставляется в виде zip-архива. Просто склеивает кадры. Минимальный набор ручных настроек.',
+			docs:[{url:'http://matthewalunbrown.com/autostitch/autostitch.html', title:'Autostitch'}]
+		},
+		{id:'photogrammetry', name:'Фотограмметрия', relations:{is:'task'},
+			description:'Фотограмметрия - научно-техническая дисциплина, занимающаяся определением формы, размеров, положения и иных характеристик объектов по их фотоизображениям.',
+			docs:[
+				{url:'https://ru.wikipedia.org/wiki/%D0%A4%D0%BE%D1%82%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B5%D1%82%D1%80%D0%B8%D1%8F', title:'Википедия: Фотограмметрия'},
+				{url:'http://limulus.ru/kb/?p=alicevision#', title:'Limulus KB: AliceVision'},
+				{url:'https://habr.com/post/422807/', title:'Habr: AliceVision: фотограмметрия из командной строки'}
+			]
+		},
+		{id:'CV', name:'Computer Vision (CV)', relations:{is:'task'}},
+		{id:'AliceVision', relations:{is:'organization'},
+			description:'Группа разработчиков фотограмметрического open-source софта.',
+			docs:[{url:'https://alicevision.github.io/', title:'GitHub: AliceVision'}]
+		},
+		{id:'Meshroom', relations:{is:'FOSS', producedBy:'AliceVision', intendedFor:'photogrammetry'},
+			description:'3D Reconstruction Software, автоматизация всего фотограмметрического цикла'
+		},
+		{id:'MeshroomMaya', relations:{is:'FOSS', producedBy:'AliceVision', intendedFor:'photogrammetry'},
+			description:'Photomodeling plugin for Autodesk © Maya'
+		},
+		{id:'ofxMVG', relations:{is:'FOSS;plugin', producedBy:'AliceVision', intendedFor:'photogrammetry'},
+			description:'Camera Localization OpenFX Plugin for Nuke'
+		},
+		{id:'AliceVisionFramework', name:'AliceVision framework', relations:{is:'FOSS;framework', producedBy:'AliceVision', intendedFor:'photogrammetry;CV'},
+			description:'Photogrammetric Computer Vision framework'
+		},
+		{id:'CCTag', relations:{is:'FOSS', producedBy:'AliceVision', intendedFor:'photogrammetry'},
+			description:'библиотека для распознавания маркеров CCTag'
+		},
+		{id:'PopSIFT', relations:{is:'FOSS', producedBy:'AliceVision', intendedFor:'photogrammetry'},
+			description:'Scale-Invariant Feature Transform (SIFT)'
+		},
+		{id:'LG', relations:{is:'organization'}},
+		{id:'Samsung', relations:{is:'organization'}},
+		{id:'LGR105', name:'LG 360 Cam (LGR105)', relations:{is:'cam360', producedBy:'LG'},
+			docs:[{url:'https://rec360.ru/spherical-cameras/lg-360-cam.html', title:'LG 360 Cam'}],
+			attributes:{
+				photoResolution:'5660×2830',
+				videoResolution:'2560×1440 (30 FPS)',
+				battCapacity_mAh:1200,
+				priceRub:14990,
+				memoryGB:4
+			}
+		},
+		{id:'SamsungGear360_2017', name:'Samsung Gear 360 (2017)', relations:{is:'cam360', producedBy:'Samsung', soldIn:'rec360{priceRub:14990}'},
+			docs:[{url:'https://rec360.ru/spherical-cameras/samsung-gear-360-2017.html', title:'Samsung Gear 360 (2017)'}],
+			attributes:{
+				photoResolution:'5472×2736',
+				videoResolution:'4096×2048 (24 FPS)',
+				battCapacity_mAh:1160,
+				priceRub:14990
+			}
+		},
+		{id:'rec360', relations:{is:'shop'},
+			docs:[{url:'https://rec360.ru/', title:'REC360.ru :: Интернет-магазин камер 360 градусов'}],
+			attributes:{
+				address:'Москва, б-р Энтузиастов, 2 (БЦ Golden Gate)'
+			}
+		},
+	]
+}));
+</script>
+</head>
+<body></body>
+</html>

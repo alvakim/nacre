@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="../js/lib/jquery-3.1.1.min.js"></script>
+<script src="../js/lib/clarino.min.js"></script>
+<script src="../js/lib/jsonquarry.js"></script>
+<script type="module" src="../js/kbmain.js"></script>
+
+<script type="module">
+SimpleView(KB({
+	name:"AI",
+	relationTypes:[
+		{id:'worksOn', name:'работает на', inversion:'платформа для', description:'Обозначает платформу для ПО'}
+	],
+	queries:[
+		{id:'workingItems', name:'Working Items', select:kb=>{
+			const res = kb.itemsList
+				.map(x=>{
+					const rel = kb.relationsBySource[x.id];
+					return rel&&rel.worksOn?[ 
+						{itemRef:x.id},
+						' works on ',
+						{itemRef:rel.worksOn[0].trg}
+					]:null;
+				})
+				.filter(x=>x!=null)
+			;
+			return {type:'table', headers:['Item', 'Relation', 'Platform'], rows:res};
+		}}
+	],
+	articles:[
+		{id:'mobileNet', url:'https://www.npmjs.com/package/@tensorflow-models/mobilenet', title:'MobileNet'}
+	],
+	items:[
+		{id:'favorite'}, 
+		{id:'task', name:'Задача'},
+		{id:'software', name:'ПО'},
+		{id:'proglang', name:'Programming Language'},
+		{id:'Python', relations:{is:'proglang;favorite(0.5)'}},
+		{id:'JavaScript', relations:{is:'proglang'}},
+		{id:'imgClassification', name:'Классификация (распознавание) изображений', relations:{
+			is:'task'
+		}},
+		// {id:'AI', name:'Artifical Intelligence', isRoot:true},
+		{id:'ANN', name:'Artifical Neural Network', relations:{uses:'AnnLayer'}},
+		{id:'CNN', name:'Convolutional Neural Network (сверточная нейронная сеть)', relations:{
+			is:'ANN',
+			intendedFor:'imgClassification'
+		}, docs:[
+			{url:"https://en.wikipedia.org/wiki/Convolutional_neural_network", title:'Wikipedia: Convolutional neural network', description:'Статья из Википедии. Довольно общий обзор.'}
+		]},
+		{id:'RNN', name:'Recurrent Neural Network', relations:{
+			is:'ANN'
+		}},
+		{id:'MLP', name:'multilayer perceptron', relations:{
+			is:'ANN'
+		}},
+		{id:'NLP', name:'Natural Language Processing', relations:{
+			 is:'task'
+		}},
+		{id:'model', relations:{intendedFor:'ML'}},
+		{id:'ML', name:'Machine Learning', relations:{is:'task', intendedFor:'imgClassification'}},
+		{id:'DL', name:'Deep Learning', relations:{is:'ML'}},
+		{id:'TensorFlow', relations:{is:'software', intendedFor:'ANN', worksOn:'Python'}},
+		{id:'TensorFlowJS', relations:{is:'software', comesFrom:'TensorFlow', worksOn:'JavaScript'}},
+		{id:'dataAug', name:'Data augmentation (дополнение данных)', relations:{is:'task'}, description:'Техника, позволяющая увеличить количество данных, путем создания новых на основе существующего набора данных.'},
+		{id:'imgaug', relations:{is:'software', worksOn:'Python', intendedFor:'dataAug'},
+			description:['Библиотека для преобразования изображений'],
+			docs:[{url:'https://github.com/aleju/imgaug', title:'imgaug', description:[
+				'Репозиторий проекта',
+				'Все на Python'
+			]}]
+		},
+		{id:'VGG-16', relations:{is:'CNN', intendedFor:'imgClassification'},
+			description:['Популярная CNN, которая используется для классификации изображений'],
+			docs:[
+				{url:'https://cdn-images-1.medium.com/max/800/1*e4eRdijqn1F8K64fjtk3oQ.png', title:'Структура VGG-16'}
+			]
+		},
+		{id:'MobileNet', relations:{is:'model', like:'VGG-16', intendedFor:'TensorFlowJS;imgClassification'},
+			description:[
+				'MobileNet настолько же хороша как и VGG-16, но она так же и намного меньше, что ускоряет прямое распространение и сокращает время загрузки в браузере. MobileNet была обучена на ILSVRC-2012-CLS наборе классифицированных изображений.'
+			],
+			docs:[
+				//{url:'https://www.npmjs.com/package/@tensorflow-models/mobilenet', title:'MobileNet'},
+				{article:'mobileNet'},
+				'Еще какая-то книжка',
+				{sdfsf:'Глюк какой-то'}
+			]
+		},
+		{id:'TransferLearning', relations:{is:'task', intendedFor:'ANN;ML'},
+			description:['Перенос обучения позволяет повторно использовать уже обученные сети. Мы можем брать результат работы любого из слоёв существующей сети и передавать его как входные данные в новую нейронную сеть.'],
+			docs:[
+				{url:'https://cdn-images-1.medium.com/max/800/1*bWeZmSYTlcQwDOoIzFLRRA.png', title:'Transfer Learning'}
+			]
+		},
+		{id:'actFun', name:'Activation Function', relations:{intendedFor:'ANN'}},
+		{id:'sigmoid', relations:{is:'actFun'}, description:['Сигмоидная функция активации']},
+		{id:'ReLU', relations:{is:'actFun'}, description:['Функция активации: y=x при x&gt;0 и y=0 при x&lt;0']},
+		{id:'optMethod', name:'Метод оптимизации', relations:{intendedFor:'ML', _is:'SGD'}, docs:[
+			{url:'https://habr.com/post/318970/', title:'Методы оптимизации нейронных сетей'}
+		]},
+		{id:'SGD', description:['Stochastic gradient descent - Стохастический градиентный спуск'], relations:{/*is:'optMethod'*/}},
+		{id:'NAG', name:'Nesterov Accelerated Gradient', relations:{is:'optMethod'}},
+		{id:'Adagrad', description:['Adaptive gradient'], relations:{is:'optMethod'}},
+		{id:'RMSProp', relations:{is:'optMethod'}},
+		{id:'Adadelta', relations:{is:'optMethod'}},
+		{id:'Adam', description:['Adaptive moment estimation'], relations:{is:'optMethod'}},
+		{id:'Adamax', relations:{is:'optMethod'}},
+		{id:'LSTM', relations:{is:'RNN'}, description:['Long short-term memory (Долгая краткосрочная память), разновидность архитектуры рекуррентных нейронных сетей']},
+		{id:'AnnLayer'}
+	]
+}));
+</script>
+</head>
+<body></body>
+</html>

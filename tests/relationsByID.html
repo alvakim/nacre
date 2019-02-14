@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="../js/lib/jquery-3.1.1.min.js"></script>
+<script src="../js/lib/clarino.min.js"></script>
+<script src="../js/lib/jsonquarry.js"></script>
+<script type="module" src="js/kbtest.js"></script>
+
+<script type="module">
+KB.maxRulesCycles = 4;
+
+let kb;
+
+Test(kb=KB({
+	name:"Relations by ID",
+	relationTypes:[
+		{id:'producedBy', name:'produced by', inversion:'producer', description:'Указывает на производителя ПО'}
+	],
+	items:[
+		{id:'organization'},
+		{id:'synthesizer'},
+		{id:'Yamaha', relations:{is:'organization'}},
+		{id:'YamahaRefaceCS', relations:{producedBy:'Yamaha'}},
+		{id:'YamahaRefaceDX', relations:{producedBy:'Yamaha'}},
+		{id:'YamahaDX7', relations:{is:'synthesizer'}}
+	]
+}), (kb)=>{
+	const {assert,equalArrays,arrayDiff} = Test;
+
+	kb.setRelation('YamahaDX7', 'producedBy', 'Yamaha');
+
+	// console.log(kb.relationsByID);
+
+	const rbi = kb.relationsByID;
+	const r2str = r=>[r.src, r.rel, r.trg].join(' ');
+
+	assert(rbi.is.length==2,  'Error 1.1');
+	assert(rbi.producedBy.length==3,  'Error 1.2');
+
+	assert(r2str(rbi.is[0])=='Yamaha is organization', 'Error 2.1'); 
+	assert(r2str(rbi.is[1])=='YamahaDX7 is synthesizer', 'Error 2.2'); 
+	assert(r2str(rbi.producedBy[0])=='YamahaRefaceCS producedBy Yamaha', 'Error 2.3'); 
+	assert(r2str(rbi.producedBy[1])=='YamahaRefaceDX producedBy Yamaha', 'Error 2.4'); 
+	assert(r2str(rbi.producedBy[2])=='YamahaDX7 producedBy Yamaha', 'Error 2.5'); 
+
+});
+</script>
+</head>
+<body></body>
+</html>

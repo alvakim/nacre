@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="../js/lib/jquery-3.1.1.min.js"></script>
+<script src="../js/lib/clarino.min.js"></script>
+<script src="../js/lib/jsonquarry.js"></script>
+<script type="module" src="js/kbtest.js"></script>
+
+<script type="module">
+Test(KB({
+	name:"Null Relation",
+	items:[
+		{id:'organization'},
+		{id:'Yamaha', relations:{is:'organization'}},
+		{id:'bar', relations:{is:'organization(0.5)'}},
+		{id:'whiskeyBar', relations:{is:'bar(0.9)'}},
+		{id:'synthesizer', relations:{is:'organization(0)'}}
+	]
+}), (kb)=>{
+	const {assert,equalArrays,arrayDiff} = Test;
+
+	//console.log(kb.items);
+	//console.log(kb.isRelated('whiskeyBar', 'is', 'organization'));
+
+	assert(kb.isRelated('Yamaha', 'is', 'organization')===true, 'Error 1.1');
+
+	assert(kb.relationsBySource.whiskeyBar.is[0].weight===0.9, 'Error 2.1');
+	assert(kb.isRelated('whiskeyBar', 'is', 'bar')===0.9, 'Error 2.2');
+
+	//*** При транзитивных отношениях вес отношения вычисляется как произведение весов всех промежуточных отношений
+	assert(kb.isRelated('whiskeyBar', 'is', 'organization')===0.9*0.5, 'Error 2.3');
+
+	assert(kb.relationsBySource.bar.is[0].weight===0.5, 'Error 2.1.1');
+	assert(kb.isRelated('bar', 'is', 'organization')===0.5, 'Error 2.1.2');
+
+	assert(kb.relationsBySource.synthesizer.is[0].weight===0, 'Error 3.1');
+	assert(kb.isRelated('synthesizer', 'is', 'organization')===false, 'Error 3.2');
+
+});
+</script>
+</head>
+<body></body>
+</html>

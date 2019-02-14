@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="../js/lib/jquery-3.1.1.min.js"></script>
+<script src="../js/lib/clarino.min.js"></script>
+<script src="../js/lib/jsonquarry.js"></script>
+<script type="module" src="../js/kbmain.js"></script>
+
+<script type="module">
+SimpleView(KB({
+	name:"ОАО Рога и копыта",
+	attributeNames:{
+		from:'с',
+		to:'по'
+	},
+	relationTypes:[
+		{id:'takes', name:'занимает должность', inversion:'occuped by', description:'Указывает на занимаемую должность'},
+		{id:'worksAt', name:'работает в', inversion:'work place of', description:'Связывает должность и организацию'}
+	],
+	conditions:[
+		{id:'postInOrganization', check:kb=>{
+			kb.relationsByID.worksAt.map(r=>{
+				if(!kb.isRelated(r.trg, 'is', 'organization'))
+					kb.errors.push(`Bad relation target: "${r.trg}" of relation "worksAt"`)
+			});
+		}}
+	],
+	items:[
+		{id:'BasicNotion'},
+		{id:'organization', relations:{is:'BasicNotion'}},
+		{id:'rnk', name:'ОАО Рога и копыта', relations:{is:'organization'}},
+		{id:'post', name:'Должность', relations:{is:'BasicNotion'}},
+		{id:'person', relations:{is:'BasicNotion'}},
+		{id:'gendir', name:'генеральный директор', relations:{is:'post'}},
+		{id:'gbuch', name:'главбух', relations:{is:'post'}},
+		{id:'gendirRnk', name:'генеральный директор ОАО Р&К', relations:{is:'gendir', worksAt:'rnk'}},
+		{id:'gbuchRnk', name:'главбух ОАО Р&К', relations:{is:'gbuch', worksAt:'rnk'}},
+		{id:'III', name:'Иванов И.И.', relations:{is:'person;gendirRnk{from:2010, to:2013}'}},
+		{id:'PPP', name:'Петров П.П.', relations:{is:'person;gendirRnk{from:2013, to:2018}'}},
+		{id:'SSS', name:'Сидоров С.С.', relations:{is:'person;gbuchRnk{from:1998}'}}
+	]
+}));
+</script>
+</head>
+<body></body>
+</html>

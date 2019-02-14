@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Nacre KB Tests</title>
+	<style>
+		body{
+			font-family: Verdana, Arial, Sans-Serif;
+			color:#ffe;
+			background-color:#012;
+		}
+		iframe{
+			border-width:0;
+			margin:5px;
+		}
+	</style>
+	<script src="js/lib/jquery-3.1.1.min.js"></script>
+	<script src="js/lib/clarino.min.js"></script>
+	<script>
+		$(function(){
+			const tests = [
+				'simplekb',
+				'reversedRelations',
+				'isrelated',
+				'relationAttributes',
+				'relationAttributes2',
+				'rules',
+				'conditions',
+				'relationsByID',
+				'nullRelation',
+				'relationConditions',
+				'itemConditions',
+				'symmetricRelations'
+			];
+
+			const $C = Clarino.version('1.2.0');
+			const $H = $C.simple;
+			const {markup,apply,div} = $H;
+
+			$('#pnlTests').html(markup(
+				apply(tests, t=>$C.html.iframe({src:'tests/'+t+'.html'}))
+			));
+		});
+	</script>
+</head>
+<body>
+	<h1>Nacre KB Tests</h1>
+	<div id="pnlTests"></div>
+</body>
+</html>

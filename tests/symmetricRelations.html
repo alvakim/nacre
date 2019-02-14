@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="../js/lib/jquery-3.1.1.min.js"></script>
+<script src="../js/lib/clarino.min.js"></script>
+<script src="../js/lib/jsonquarry.js"></script>
+<script type="module" src="js/kbtest.js"></script>
+
+<script type="module">
+KB.maxRulesCycles = 4;
+
+Test(KB({
+	name:"Symmetric Relations",
+	items:[
+		{id:'dog', relations:{like:'cat'}},
+		{id:'cat', relations:{like:'fox'}},
+		{id:'fox', relations:{like:'dog'}},
+		{id:'bird', relations:{like:'butterfly'}},
+		{id:'butterfly'}
+	]
+}), (kb)=>{
+	const {assert,equalArrays,arrayDiff} = Test;
+
+	assert(kb.isRelated('dog', 'like', 'fox'), 'Error 1.1');
+	assert(kb.isRelated('fox', 'like', 'cat'), 'Error 1.2');
+	assert(kb.isRelated('fox', 'like', 'fox'), 'Error 1.3');
+	
+	assert(kb.isRelated('bird', 'like', 'butterfly'), 'Error 2.1');
+	assert(kb.isRelated('butterfly', 'like', 'bird'), 'Error 2.2');
+
+});
+</script>
+</head>
+<body></body>
+</html>

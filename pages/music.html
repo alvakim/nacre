@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="../js/lib/jquery-3.1.1.min.js"></script>
+<script src="../js/lib/clarino.min.js"></script>
+<script src="../js/lib/jsonquarry.js"></script>
+<script type="module" src="../js/kbmain.js"></script>
+
+<script type="module">
+SimpleView(KB({
+	name:"Music",
+	relationTypes:[
+		{id:'producedBy', name:'produced by', inversion:'producer', description:'Указывает на производителя ПО', conditions:kb=>{
+			kb.restriction.relationTarget('producedBy', 'organization');
+			kb.restriction.relationSource('producedBy', 'synthesizer;series');
+		}}
+	],
+	attributeNames:{
+		address:'Адрес'
+	},
+	articles:[
+		{id:'yamahaRefaceReviewed', url:'https://www.keyboardmag.com/gear/yamaha-reface-synths-reviewed', title:'Yamaha Reface synths reviewed!'}
+	],
+	conditions:[ ],
+	queries:[
+		{id:'yamahaProducts', name:'Yamaha Products', select:kb=>{
+			const prices = [22,35,123,434,55,234];
+			const codes = 'sy23e;SD55;5XW33;AX434;DD34'.split(';');
+			let idx = 0;
+			return {
+				type:'table',
+				headers:['Product name', 'Product type', 'Price', 'Product code'],
+				rows: kb.itemsList
+					.filter(e=>kb.isRelated(e.id, 'producedBy', 'Yamaha'))
+					.map(e=>([
+						{itemRef:e.id},
+						kb.relationsBySource[e.id].is.map(x=>({itemRef:x.trg})),
+						prices[idx],
+						codes[idx++]
+					]))
+			};
+		}}
+	],
+	rules:[
+		{id:'seriesProducer',
+			// Пример правила:
+			// автоматически устанавливаем отношения типа producedBy 
+			// для всех товаров внутри серии для которой указан производитель
+			condition: kb=>{
+				const res = [];
+				kb.forAny('series', (itm)=>{
+					const producer = kb.relationsBySource[itm.id].producedBy[0].trg;
+					const d = {
+						producer,
+						goods: kb.relationsBySource[itm.id].includes
+							.map(g=>g.trg)
+							// обязательно проверяем, что необходимые отношение еще не установлены
+							// - это условие выхода из цикла применения правил
+							.filter(x=>!kb.isRelated(x, 'producedBy', producer))
+					};
+					if(d.goods.length) res.push(d);
+				});
+				return res.length?res
+					:null; // null - признак, что данное правило применять не нужно
+			},
+			action:(kb, data, self)=>{
+				data.forEach(d=>{
+					d.goods.forEach(g=>{
+						kb.setRelation(g, 'producedBy', d.producer, self.id);
+					});
+				});
+			}
+		}
+	],
+	items:[
+		{id:'organization', conditions:kb=>{
+			kb.restriction.itemAttributeRequired('organization', 'address');
+		}},
+		{id:'series'},
+		{id:'synthesizer'},
+		{id:'FMSynth', relations:{is:'synthesizer'}},
+		{id:'Yamaha', relations:{is:'organization'},
+			attributes:{address:'Japan'},
+			queries:'yamahaProducts',
+			docs:[
+				{url:'3d.html#cam360', title:'А вот тут можно про 360-градусные камеры почитать'}
+			]
+		},
+		{id:'YamahaReface', relations:{is:'series', producedBy:'Yamaha'},
+			description:[
+				'Yamaha Reface - новая серия синтезаторов <ref book="yaReface"/>.',
+				'В <ref book="yamahaRefaceReviewed"/> представлено сравнение моделей этой серии. Или здесь <ref book="yaReface"/> можно смотреть.'
+			],
+			docs:[
+				{url:'https://www.muztorg.ru/product/A061417?gclid=CjwKCAiAs8XiBRAGEiwAFyQ-eqWOeCbI1Gg_eS7_hnySph6IZX-3gHG1ifMW2uFhv8FZBSQpiv3pExoCHSgQAvD_BwE', title:'Muztorg: YamahaRefaceDX'},
+				{id:'yaReface', url:'https://usa.yamaha.com/products/music_production/synthesizers/reface/index.html', title:'Yamaha: Reface'},
+				{url:'https://usa.yamaha.com/products/music_production/synthesizers/reface/dx/index.html', title:'Yamaha: RefaceDX'},
+				{article:'yamahaRefaceReviewed'}
+			]
+		}, 
+		{id:'YamahaRefaceCS', relations:{is:'synthesizer', _includes:'YamahaReface'}},
+		{id:'YamahaRefaceDX', relations:{is:'synthesizer', _includes:'YamahaReface'}},
+		{id:'dx7', name:'Yamaha DX7', relations:{is:'FMSynth', producedBy:'Yamaha'}}
+	]
+}));
+</script>
+</head>
+<body></body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="../js/lib/jquery-3.1.1.min.js"></script>
+<script src="../js/lib/clarino.min.js"></script>
+<script src="../js/lib/jsonquarry.js"></script>
+<script type="module" src="../js/kbmain.js"></script>
+
+<script type="module">
+SimpleView(KB({
+	name:"Solution sample",
+	relationTypes:[
+		// {id:'writtenOn', name:'написан на', inversion:'язык реализации', description:'Указывает на язык реализации данного ПО'},
+		// {id:'implements', name:'реализует', inversion:'реализован на', description:'Указывает на решаемую данным ПО задачу'},
+		// {id:'producedBy', name:'произведен', inversion:'производитель', description:'Указывает на производителя ПО'},
+		{id:'advantage', name:'обладает преимуществом', inversion:'преимущество для', description:'Указывает на преимущество'},
+		{id:'disadvantage', name:'обладает недостатком', inversion:'недостаток для', description:'Указывает на недостаток'}
+		// {id:'worksOn', name:'работает на', inversion:'платформа для', description:'Указывает на платформу для работы заданного ПО'}
+	],
+	items:[
+		{id:'BasicNotion'},
+		{id:'problem', relations:{is:'BasicNotion'}},
+		{id:'fact', relations:{is:'BasicNotion'}},
+		{id:'solution', relations:{is:'BasicNotion'}},
+		{id:'proglang', relations:{is:'BasicNotion'}},
+		{id:'Java', relations:{is:'proglang'}},
+		{id:'JavaScript', relations:{is:'proglang'}},
+		{id:'Python', relations:{is:'proglang'}},
+		{id:'KBdev', name:'KB Development', relations:{is:'problem', includes:'progLangSelection'}},
+		{id:'progLangSelection', name:'Выбор языка программирования', relations:{is:'problem', includes:'usingJavaScript;usingPython'}},
+		{id:'usingJavaScript', relations:{is:'solution', advantage:'simpleSyntax'}},
+		{id:'usingPython', relations:{is:'solution'}},
+		{id:'simpleSyntax', relations:{is:'fact'}}
+		
+	]
+}));
+</script>
+</head>
+<body></body>
+</html>

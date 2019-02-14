@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="../js/lib/jquery-3.1.1.min.js"></script>
+<script src="../js/lib/clarino.min.js"></script>
+<script src="../js/lib/jsonquarry.js"></script>
+<script type="module" src="js/kbtest.js"></script>
+
+<script type="module">
+KB.maxRulesCycles = 4;
+
+Test(KB({
+	name:"Rules",
+	relationTypes:[
+		{id:'producedBy', name:'produced by', inversion:'producer', description:'Указывает на производителя ПО'}
+	],
+	rules:[
+		{id:'seriesProducer',
+			// Пример правила:
+			// автоматически устанавливаем отношения типа producedBy 
+			// для всех товаров внутри серии для которой указан производитель
+			condition: kb=>{
+				const res = [];
+				kb.forAny('series', (itm)=>{
+					const producer = kb.relationsBySource[itm.id].producedBy[0].trg;
+					const d = {
+						producer,
+						goods: kb.relationsBySource[itm.id].includes
+							.map(g=>g.trg)
+							// обязательно проверяем, что необходимые отношение еще не установлены
+							// - это условие выхода из цикла применения правил
+							.filter(x=>!kb.isRelated(x, 'producedBy', producer))
+					};
+					if(d.goods.length) res.push(d);
+				});
+				return res.length?res
+					:null; // null - признак, что данное правило применять не нужно
+			},
+			action:(kb, data, self)=>{
+				data.forEach(d=>{
+					d.goods.forEach(g=>{
+						kb.setRelation(g, 'producedBy', d.producer, self.id);
+					});
+				});
+			}
+		}
+	],
+	items:[
+		{id:'organization'},
+		{id:'series'},
+		{id:'synthesizer'},
+		{id:'FMSynth', relations:{is:'synthesizer'}},
+		{id:'Yamaha', relations:{is:'organization'}},
+		{id:'YamahaReface', relations:{is:'series', producedBy:'Yamaha'}}, 
+		{id:'YamahaRefaceCS', relations:{_includes:'YamahaReface'}},
+		{id:'YamahaRefaceDX', relations:{_includes:'YamahaReface'}},
+		{id:'dx7', name:'Yamaha DX7', relations:{is:'FMSynth', producedBy:'Yamaha'}}
+	]
+}), (kb)=>{
+	const {assert,equalArrays,arrayDiff} = Test;
+
+	{let rel = kb.relationsByTarget.Yamaha.producer;
+		assert(rel!=null, 'Error 1.0');
+		assert(rel.length==4, 'Error 1.1');
+
+		function containsSrc(src){return rel.filter(x=>x.src==src).length==1;}
+
+		assert(containsSrc('YamahaReface'), 'Error 1.2');
+		assert(containsSrc('dx7'), 'Error 1.3');
+
+		// Relations created by rule
+		assert(containsSrc('YamahaRefaceCS'), 'Error 2.1');
+		assert(containsSrc('YamahaRefaceDX'), 'Error 2.2');
+		assert(rel.filter(x=>x.reason==='seriesProducer').length===2, 'Error 2.3');
+		console.log(rel);
+	}
+});
+</script>
+</head>
+<body></body>
+</html>

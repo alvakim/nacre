@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="../js/lib/jquery-3.1.1.min.js"></script>
+<script src="../js/lib/clarino.min.js"></script>
+<script src="../js/lib/jsonquarry.js"></script>
+<script type="module" src="js/kbtest.js"></script>
+
+<script type="module">
+Test(KB({
+	name:"Relation Attributes 2",
+	relationTypes:[
+		{id:'soldIn', name:'продается в', inversion:'продает', description:'Указывает на продавца товара'}
+	],
+	attributeNames:{
+		priceRub:'Цена(руб)'
+	},
+	items:[
+		{id:'organization'},
+		{id:'hardware'},
+		{id:'genericCamera', relations:{is:'hardware'}},
+		{id:'smallShop', relations:{is:'organization'}},
+		{id:'megaShop', relations:{is:'organization'}},
+		{id:'simpleCamera', relations:{is:'genericCamera', soldIn:'megaShop{priceRub:10000}'}},
+		{id:'cheapCamera', relations:{
+			is:'genericCamera',
+			soldIn:{trg:'megaShop', attributes:{priceRub:9000}}
+		}},
+		{id:'superCamera', relations:{
+			is:'genericCamera',
+			soldIn:[
+				{trg:'smallShop', attributes:{
+					priceRub:12000
+				}},
+				{trg:'megaShop', attributes:{
+					priceRub:10000
+				}}
+			]
+		}}
+	]
+}), (kb)=>{
+	const {assert,equalArrays,arrayDiff} = Test;
+
+	// console.log(kb.items);
+
+
+	{let rels = kb.relationsBySource.simpleCamera.soldIn;
+		assert(rels.length==1, 'Error 1.1');
+		let attrs = rels[0].attributes;
+		assert(attrs.priceRub==10000, 'Error 1.2');
+	}
+
+	{let rels = kb.relationsBySource.cheapCamera.soldIn;
+		assert(rels!=null, 'Error 2.0');
+		assert(rels.length===1, 'Error 2.1');
+		let attrs = rels[0].attributes;
+		assert(attrs.priceRub==9000);
+	}
+
+	{let rels = kb.relationsBySource.superCamera.soldIn;
+		assert(rels!=null, 'Error 3.0');
+		assert(rels.length===2, 'Error 3.1');
+		assert(rels[0].attributes.priceRub==12000, 'Error 3.2');
+		assert(rels[1].attributes.priceRub==10000, 'Error 3.3');
+	}
+
+	{let rels = kb.relationsByTarget.megaShop['продает'];
+		assert(rels.length===3, 'Error 4.1');
+		const relSources = rels.map(x=>x.src).sort().join();
+		assert(relSources==='cheapCamera,simpleCamera,superCamera', 'Error 4.2');
+	}
+
+});
+</script>
+</head>
+<body></body>
+</html>

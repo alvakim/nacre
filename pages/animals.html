@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="../js/lib/jquery-3.1.1.min.js"></script>
+<script src="../js/lib/clarino.min.js"></script>
+<script src="../js/lib/jsonquarry.js"></script>
+<script type="module" src="../js/kbmain.js"></script>
+
+<script type="module">
+SimpleView(KB({
+	name:"Animals",
+	items:[
+		{id:'dog', relations:{like:'cat'}},
+		{id:'cat', relations:{like:'fox'}},
+		{id:'fox', relations:{like:'dog'}},
+		{id:'bird', relations:{like:'butterfly'}},
+		{id:'butterfly'}
+	]
+}));
+</script>
+</head>
+<body></body>
+</html>

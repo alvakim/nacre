@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="../js/lib/jquery-3.1.1.min.js"></script>
+<script src="../js/lib/clarino.min.js"></script>
+<script src="../js/lib/jsonquarry.js"></script>
+<script type="module" src="../js/kbmain.js"></script>
+
+
+<script type="module">
+const $C = Clarino.version('1.2.0'), $H = $C.simple;
+const{p} = $H;
+const quote = $H.p;
+SimpleView(KB({
+	name:"NoSQL",
+	
+	relationTypes:[
+		{id:'worksOn', name:"работает на", inversion:"платформа для", description:"Обозначает платформу для программного обеспечения"
+		},
+		{id:'writtenIn', name:"написан на", inversion:"язык реализации", description:"обозначает язык для реализации софта"
+		},
+		{id:'developedBy', name:"developed by", inversion:"developer of"},
+		{id:'supports', name:"поддерживает", inversion:"поддерживается", description:"Указывает на поддержку форматов, возможностей, и т.п."},
+		{id:'implements', name:"implements", inversion:"implemented by", description:"Указывает на реализацию спецификации"}
+	],
+
+	// articles:[
+		// {id:'SonesDoc', title:"Sones GraphDB Documentation", url:"http://developers.sones.de/documentation/"}
+	// ],
+	
+	items:{
+		basicNotion:{rootNotion:true},
+		FavouriteDB:{relations:{is:"basicNotion"}},
+		"unknown platform":{relations:{is:"platform"}, description:"Обозначает, что платформа неизвестна, и должна быть установлена"},
+		NoSqlDB:{name:"NoSQL Data Base", relations:{is:"dataBase"}, description:"База данных, не использующая SQL.",
+			docs:[
+				{url:"http://en.wikipedia.org/wiki/NoSQL", title:"NoSQL - Wikipedia, the free encyclopedia"},
+				{url:"http://nosql-database.org/", title:"NOSQL Databases"},
+				{url:"http://citforum.ru/gazeta/153/", title:"Дискуссия по поводу \"NoSQL\" не имеет никакого отношения к SQL"}
+			]
+		},
+		"Graph Database":{relations:{is:"NoSqlDB", intendedFor:"Социальная сеть(0.6)"}},
+		DocumentStoreDB:{relations:{is:"NoSqlDB"}},
+		"WideColumnStore":{relations:{is:"NoSqlDB"}},
+		XmlDB:{name:"XML Database", relations:{is:"NoSqlDB"}},
+		Linq:{relations:{is:"language"}},
+		JSON:{relations:{is:"language"}},
+		XML:{relations:{is:"language"}},
+		XQuery:{relations:{is:"language"}},
+		XPath:{relations:{is:"language"}},
+		XSLT:{relations:{is:"language"}},
+		XUpdate:{relations:{is:"language"}},
+		REST:{relations:{is:"protocol"}},
+		SOAP:{relations:{is:"protocol"}},
+		ACID:{
+			relations:{is:"dbFeature"},
+			description:"ACID (atomicity, consistency, isolation, durability) is a set of properties that guarantee database transactions  are processed reliably.",
+			docs:[
+				{url:"http://en.wikipedia.org/wiki/ACID", title:"ACID - Wikipedia, the free encyclopedia"}
+			]
+		},
+		OLTP:{
+			relations:{is:"software"},
+			description:"Online transaction processing, or OLTP, refers to a class of systems that facilitate and manage transaction-oriented applications, typically for data entry and retrieval transaction processing.",
+			docs:[
+				{url:"http://en.wikipedia.org/wiki/Online_transaction_processing", title:"Online transaction processing - Wikipedia, the free encyclopedia"}
+			]
+		},
+		dataBase:{relations:{is:"software", supports:"dbFeature"}},
+		protocol:{relations:{is:"basicNotion"}},
+		dbFeature:{relations:{is:"basicNotion"}},
+		indexing:{relations:{is:"dbFeature"}, description:"Создание индексов данных для быстрого поиска"},
+		sharding:{relations:{is:"dbFeature"}, description:"Partitioning the data across multiple servers"},
+		GraphQueryLanguage:{name:"Graph Query Language (GQL)",
+			relations:{is:"language"},
+			description:"The sones Graph Query Language (GQL)  allows you to create, modify, and query a graph (database) and invoke adminstrative commands.",
+			docs:[
+				{url:"http://developers.sones.de/documentation/graph-query-language/", title:"developers.sones.de » Graph Query Language"}
+			]
+		},
+		software:{relations:{is:"basicNotion"}},
+		"Operating System":{relations:{is:"software;platform"}},
+		openSource:{name:"Open Source Software", relations:{is:"software"}},
+		proprietarySoft:{name:"Proprietary Software", relations:{is:"software"}},
+		platform:{relations:{is:"basicNotion"}, name:"Платформа", description:"Программно-аппаратная платформа"},
+		utility:{name:"Программная утилита", relations:{is:"software"}},
+		".NET":{relations:{is:"platform"}},
+		".NET v3.5":{relations:{is:".NET"}},
+		".NET v4.0":{relations:{is:".NET"}},
+		"Mono":{relations:{is:".NET"}},
+		JVM:{description:"Java Virtual Machine", relations:{is:"platform"}},
+		language:{relations:{is:"basicNotion"}},
+		ProgLang:{name:"Program Language", relations:{is:"language"}},
+		Java:{description:"Java language", relations:{is:"ProgLang", refTo:"JVM"}},
+		"C#":{relations:{is:"ProgLang", refTo:".NET"}},
+		"C":{relations:{is:"ProgLang"}},
+		"C++":{relations:{is:"ProgLang"}},
+		Erlang:{relations:{is:"ProgLang"}},
+		Python:{relations:{is:"ProgLang"}},
+		Delphi:{relations:{is:"ProgLang"}},
+		PHP:{relations:{is:"ProgLang"}},
+		Javascript:{relations:{is:"ProgLang"}},
+		Ruby:{relations:{is:"ProgLang"}},
+		ColdFusion:{relations:{is:"ProgLang"}},
+		Factor:{relations:{is:"ProgLang"}},
+		Perl:{relations:{is:"ProgLang"}},
+		JSCA:{name:"Java Language Conversion Assistant", relations:{is:"utility", refTo:"Java;C#"},
+			description:"Java Language Conversion Assistant is a tool that automatically converts existing Java-language code into Visual C#",
+			docs:[
+				{url:"http://www.microsoft.com/downloads/details.aspx?FamilyID=46bea47e-d47f-4349-9b4f-904b0a973174&displaylang=en", title:"Java Language Conversion Assistant 2.0"}
+			]
+		},
+		
+		"MS Windows":{relations:{is:"Operating System;proprietarySoft", developedBy:"Microsoft"}},
+		"Linux":{relations:{is:"Operating System;openSource"}},
+		"FreeBSD":{relations:{is:"Operating System"}},
+		"Solaris":{relations:{is:"Operating System"}},
+		"Mac OS":{relations:{is:"Operating System"}},
+		
+		RavenDB:{name:"Raven DB", 
+			relations:{
+				is:"DocumentStoreDB;openSource;FavouriteDB(0.5)", 
+				uses:"JSON;RavenDB Client;RavenDB Server", 
+				supports:"Linq;indexing;sharding",
+				worksOn:".NET;MS Windows"
+			},
+			docs:[
+				{url:"http://ravendb.net/", title:"Raven DB Home Page"},
+				{url:"http://www.codeproject.com/KB/cs/RavenDBIntro.aspx", title:"RavenDB - An Introduction - CodeProject"},
+				{url:"http://ravendb.net/documentation", title:"Raven DB Documentation"}
+			]
+		},
+		RaptorDB:{
+			relations:{
+				is:"DocumentStoreDB;openSource;FavouriteDB(0.5)", 
+				uses:"JSON", 
+				worksOn:".NET;MS Windows"
+			},
+			docs:[
+				{url:"http://www.codeproject.com/Articles/190504/RaptorDB", title:"RaptorDB - the Key Value Store"},
+				{url:"http://www.codeproject.com/Articles/316816/RaptorDB-The-Key-Value-Store-V2#mozTocId650144", title:"RaptorDB - The Key Value Store V2"}
+			]
+		},
+		
+		"RavenDB Client":{relations:{uses:".NET v3.5;Mono(0.5)"}},
+		"RavenDB Server":{relations:{uses:".NET v4.0;MS Windows(1)"}},
+		
+		Riak:{
+			relations:{
+				is:"DocumentStoreDB;openSource;FavouriteDB(0.5)", 
+				uses:"JSON", writtenIn:"Erlang;C",
+				supports:"Erlang;Python;Java;PHP;Javascript;Ruby",
+				"implements":"Dynamo",
+				worksOn:"Linux;Mac OS"
+			},
+			docs:[
+				{url:"http://riak.basho.com/", title:"Basho Riak - A Scalable Web Database that Simplifies Application Development"},
+				{url:"https://wiki.basho.com/display/RIAK/An+Introduction+to+Riak", title:"An Introduction to Riak - Riak Wiki - Basho Wiki"},
+				{url:"https://wiki.basho.com/display/RIAK/Riak+compared+to+MongoDB", title:"Riak compared to MongoDB - Riak Wiki - Basho Wiki"},
+				{url:"https://wiki.basho.com/display/RIAK/Riak+compared+to+Cassandra", title:"Riak compared to Cassandra - Riak Wiki - Basho Wiki"},
+				{url:"https://wiki.basho.com/display/RIAK/Riak+compared+to+Neo4J", title:"Riak compared to Neo4J - Riak Wiki - Basho Wiki"}
+			]
+		},
+		
+		Cassandra:{
+			description:"Apache Cassandra",
+			relations:{
+				is:"WideColumnStore", like:"Riak;BigTable",
+				"implements":"Dynamo(0.7)",
+				worksOn:"JVM",
+				writtenIn:"Java",
+				supports:"Python;Java;.NET;Ruby;PHP;Perl;C++"
+			},
+			docs:[
+				{url:"http://incubator.apache.org/cassandra/", title:"The Apache Cassandra Project"}
+			]
+		},
+		MongoDB:{
+			relations:{
+				is:"DocumentStoreDB;openSource;FavouriteDB(0.5)", uses:"JSON", like:"Riak", writtenIn:"C++",
+				supports:"C;C++;C#;.NET;ColdFusion;Erlang;Factor;Java;Javascript;PHP;Python;Ruby;Perl;indexing;sharding",
+				worksOn:"unknown platform"
+			},
+			docs:[
+				{url:"http://www.mongodb.org/", title:"MongoDB"},
+				{url:"http://www.codeproject.com/KB/database/MongoDBCS.aspx", title:"MongoDB and C# - CodeProject"},
+				{url:"http://www.codeproject.com/Articles/321741/MongoDB-with-C-NET", title:"MongoDB with C#.NET - CodeProject"}
+			]
+		},
+		Neo4J:{relations:{is:"Graph Database;openSource", like:"Riak", writtenIn:"Java", worksOn:"unknown platform"}, docs:[
+			{url:"http://neo4j.org/", title:"neo4j open source nosql graph database »"}
+		]},
+		
+		Dynamo:{relations:{},
+			description:"Amazon's Dynamo",
+			docs:[
+				{url:"http://www.allthingsdistributed.com/2007/10/amazons_dynamo.html", title:"Amazon's Dynamo"}
+			]
+		},
+		
+		BerkeleyDB:{name:"Berkeley DB XML", 
+			relations:{
+				is:"XmlDB;openSource", uses:"XML", writtenIn:"C++", supports:"XQuery;XPath",
+				worksOn:"unknown platform"
+			},
+			docs:[
+				//{url:"http://www.oracle.com/database/berkeley-db/xml/index.html", title:"Oracle Berkeley DB XML"},
+				{url:"https://www.oracle.com/database/berkeley-db/xml.html", title:"Oracle Berkeley DB XML"}
+			]
+		},
+		BaseX:{name:"BaseX",
+			relations:{is:"XmlDB;openSource", uses:"XML", writtenIn:"Java", supports:"XQuery;XPath",
+				worksOn:"unknown platform"
+			},
+			description:"Light-weight, high-performance and scalable XML Database engine",
+			docs:[
+				{url:"http://basex.org/", title:"BaseX. The XML Database."}
+			]
+		},
+		Xindice:{
+			relations:{
+				is:"XmlDB;openSource;FavouriteDB(0.1)",
+				uses:"XML", supports:"XPath;XUpdate",
+				worksOn:"unknown platform",
+				writtenIn:"C++"
+			},
+			docs:[
+				{url:"http://xml.apache.org/xindice/", title:"Apache Xindice"}
+			]
+		},
+		eXist:{relations:{is:"XmlDB;openSource;FavouriteDB(0.7)", uses:"XML", worksOn:"JVM", writtenIn:"Java", supports:"XQuery;XPath;XSLT;XUpdate;REST;SOAP"},
+			docs:[
+				{url:"http://exist-db.org/", title:"eXist-db Open Source Native XML Database"}
+			]
+		},
+		Tamino:{name:"Tamino XML Server", relations:{is:"XmlDB", uses:"XML;XQuery", worksOn:"MS Windows;Solaris;Linux"},
+			docs:[
+				{url:"http://www.tamino.com", title:"Tamino | The XML Database – Software AG"}
+			]
+		},
+		Sedna:{
+			relations:{
+				is:"XmlDB;openSource;FavouriteDB(0.5)", uses:"XQuery", 
+				supports:"ACID;Java;C;PHP;Python;Ruby;Perl;Delphi;C#", 
+				worksOn:"MS Windows;Linux;Mac OS;FreeBSD;Solaris"
+			},
+			docs:[
+				{url:"http://modis.ispras.ru/sedna/", title:"Sedna XML Database"}
+			]
+		},
+		BigTable:{
+			relations:{
+				is:"NoSqlDB;proprietarySoft",
+				developedBy:"Google",
+				uses:"GFS",
+				worksOn:"unknown platform"
+			},
+			description:"Google's Bigtable",
+			docs:[
+				{url:"http://labs.google.com/papers/bigtable.html", title:"Google Research Publication: BigTable"},
+				{url:"http://en.wikipedia.org/wiki/BigTable", title:"BigTable - Wikipedia, the free encyclopedia"}
+			]
+		},
+		"Sones GraphDB":{relations:{is:"Graph Database", worksOn:".NET", writtenIn:"C#", supports:"GraphQueryLanguage;Linq;REST"},
+			description:[
+				// p(quote({text:"First its main focus is no longer the data, objects or vertices itself, but their (type-safe) interconnections or edges.", ref:"SonesDoc"})),
+				// p(quote({text:"Second we want to narrow the gap between classical file systems and databases by focusing on unstructured data. Which basically means that we designed your database to support small record based data e.g. JPEG metadata as efficiently as large scale binary data like your last holiday movie. ", ref:"SonesDoc"}))
+			],
+			docs:[
+				{url:"http://www.sones.com/", title:"sones GmbH - Neuartige Graphdatenbank ermoglicht bessere Auswertung &amp; Speicherung"}
+				//"SonesDoc"
+			]
+		},
+		CouchDB:{name:"Apache CouchDB", relations:{is:"DocumentStoreDB;openSource", writtenIn:"Erlang", worksOn:"unknown platform", supports:"JSON;REST"},
+			docs:[
+				{url:"http://couchdb.apache.org/", title:"Apache CouchDB: The CouchDB Project"},
+				{url:"http://books.couchdb.org/relax/", title:"CouchDB: The Definitive Guide"},
+				{url:"http://www.nixp.ru/news/Apache-CouchDB-1-0-%D0%BD%D0%BE%D0%B2%D0%B0%D1%8F-%D0%B2%D0%B5%D1%80%D1%81%D0%B8%D1%8F-%D1%81%D0%B2%D0%BE%D0%B1%D0%BE%D0%B4%D0%BD%D0%BE%D0%B9-%D0%A1%D0%A3%D0%91%D0%94.html", title:"Apache CouchDB 1.0 — новая версия свободной СУБД — Новости (nixp.ru)"}
+			]
+		},
+		GFS:{
+			description:"Google File System",
+			relations:{is:"software", developedBy:"Google"}
+		},
+		InfoGrid:{relations:{is:"Graph Database", worksOn:"JVM", writtenIn:"Java"}},
+		HyperGraphDB:{relations:{is:"Graph Database", worksOn:"JVM", writtenIn:"Java"}},
+		VertexDB:{relations:{is:"Graph Database", worksOn:"unknown platform"}},
+		application:{relations:{is:"software"}},
+		"Социальная сеть":{relations:{is:"application"}},
+		company:{relations:{is:"basicNotion"}},
+		Digg:{relations:{is:"company", uses:"Cassandra"}},
+		Facebook:{relations:{is:"company", uses:"Cassandra"}},
+		Twitter:{relations:{is:"company", uses:"Cassandra"}},
+		Reddit:{relations:{is:"company", uses:"Cassandra"}},
+		Rackspace:{relations:{is:"company", uses:"Cassandra"}},
+		Cloudkick:{relations:{is:"company", uses:"Cassandra"}},
+		Cisco:{relations:{is:"company", uses:"Cassandra"}},
+		SimpleGeo:{relations:{is:"company", uses:"Cassandra"}},
+		Ooyala:{relations:{is:"company", uses:"Cassandra"}},
+		OpenX:{relations:{is:"company", uses:"Cassandra"}},
+		Google:{relations:{is:"company"}},
+		Microsoft:{relations:{is:"company"}}
+	}
+
+}));
+
+</script>
+</head>
+<body></body>
+</html>

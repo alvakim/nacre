@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="../js/lib/jquery-3.1.1.min.js"></script>
+<script src="../js/lib/clarino.min.js"></script>
+<script src="../js/lib/jsonquarry.js"></script>
+<script type="module" src="js/kbtest.js"></script>
+
+<script type="module">
+KB.maxRulesCycles = 4;
+
+Test(KB({
+	name:"Conditions",
+	relationTypes:[
+		{id:'producedBy', name:'produced by', inversion:'producer', description:'Указывает на производителя ПО'}
+	],
+	conditions:[
+		{id:'producerIsOrganization', check:kb=>{
+			// отношение producedBy должно указывать на организацию
+			kb.relations.filter(r=>r.rel=='producedBy').forEach(r=>{
+				if(!kb.isRelated(r.trg, 'is', 'organization'))
+					kb.errors.push(`Bad relation ${r.rel} between ${r.src} and ${r.trg}`);
+			});
+		}}
+	],
+	items:[
+		{id:'organization'},
+		{id:'series'},
+		{id:'synthesizer'},
+		{id:'FMSynth', relations:{is:'synthesizer'}},
+		{id:'Yamaha', relations:{is:'organization'}},
+		{id:'YamahaReface', relations:{is:'series', producedBy:'Yamaha'}}, 
+		{id:'YamahaRefaceCS', relations:{_includes:'YamahaReface'}},
+		{id:'YamahaRefaceDX', relations:{_includes:'YamahaReface'}},
+		{id:'dx7', name:'Yamaha DX7', relations:{is:'FMSynth', producedBy:'synthesizer'}}
+	]
+}), (kb)=>{
+	const {assert,equalArrays,arrayDiff} = Test;
+
+	assert(kb.errors.length===1, 'Error 1.1');
+	assert(kb.errors[0]==='Bad relation producedBy between dx7 and synthesizer', 'Error 1.2');
+
+});
+</script>
+</head>
+<body></body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="../js/lib/jquery-3.1.1.min.js"></script>
+<script src="../js/lib/clarino.min.js"></script>
+<script src="../js/lib/jsonquarry.js"></script>
+<script type="module" src="js/kbtest.js"></script>
+
+<script type="module">
+KB.maxRulesCycles = 4;
+
+Test(KB({
+	name:"Item Conditions",
+	relationTypes:[
+	],
+	attributeNames:{
+		address:'Адрес'
+	},
+	items:[
+		{id:'organization', conditions:kb=>{
+			kb.restriction.itemAttributeRequired('organization', 'address');
+		}},
+		{id:'Yamaha', relations:{is:'organization'},
+			attributes:{address:'Japan'}
+		},
+		{id:'Korg', relations:{is:'organization'}}
+	]
+}), (kb)=>{
+	const {assert,equalArrays,arrayDiff} = Test;
+
+	assert(kb.errors.length==1, 'Error 1.1');
+	assert(kb.errors[0]==="Attribute \"address\" required for item \"Korg\"", 'Error 1.2');
+
+	
+
+});
+</script>
+</head>
+<body></body>
+</html>

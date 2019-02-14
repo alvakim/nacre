@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="../js/lib/jquery-3.1.1.min.js"></script>
+<script src="../js/lib/clarino.min.js"></script>
+<script src="../js/lib/jsonquarry.js"></script>
+<script type="module" src="js/kbtest.js"></script>
+
+<script type="module">
+Test(KB({
+	name:"Is Related",
+	items:[
+		{id:'organization'},
+		{id:'series'},
+		{id:'synthesizer'},
+		{id:'FMSynth', relations:{is:'synthesizer'}},
+		{id:'Yamaha', relations:{is:'organization'}},
+		{id:'YamahaReface', relations:{is:'series'}}, 
+		{id:'YamahaRefaceCS', relations:{_includes:'YamahaReface'}},
+		{id:'YamahaRefaceDX', relations:{_includes:'YamahaReface'}},
+		{id:'dx7', name:'Yamaha DX7', relations:{is:'FMSynth'}}
+	]
+}), (kb)=>{
+	const {assert,equalArrays,arrayDiff} = Test;
+
+	//console.log(kb.items);
+
+	assert(kb.isRelated('YamahaReface', 'is', 'series')===true, 'Error 1.1');
+	assert(kb.isRelated('YamahaReface', 'is', 'organization')===false, 'Error 1.2');
+
+	assert(kb.isRelated('dx7', 'is', 'FMSynth')===true, 'Error 2.1');
+	assert(kb.isRelated('dx7', 'is', 'series')===false, 'Error 2.2');
+	assert(kb.isRelated('dx7', 'is', 'synthesizer')===true, 'Error 2.3');
+
+});
+</script>
+</head>
+<body></body>
+</html>

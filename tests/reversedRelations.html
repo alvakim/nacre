@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<script src="../js/lib/jquery-3.1.1.min.js"></script>
+<script src="../js/lib/clarino.min.js"></script>
+<script src="../js/lib/jsonquarry.js"></script>
+<script type="module" src="js/kbtest.js"></script>
+
+<script type="module">
+Test(KB({
+	name:"Reversed Relations",
+	items:[
+		{id:'organization'},
+		{id:'series'},
+		{id:'Yamaha', relations:{is:'organization'}},
+		{id:'YamahaReface', relations:{is:'series'}}, 
+		{id:'YamahaRefaceCS', relations:{_includes:'YamahaReface'}},
+		{id:'YamahaRefaceDX', relations:{_includes:'YamahaReface'}}
+	]
+}), (kb)=>{
+	const {assert,equalArrays,arrayDiff} = Test;
+
+	//console.log(kb.items);
+
+	{let rels = kb.relationsBySource.YamahaReface.includes;
+		assert(rels!=null, 'Error 1.1: Nothing included');
+		assert(rels.length==2, 'Error 1.11: Bad relations count');
+		assert(rels.every(x=>x.src=='YamahaReface'), 'Error 1.2: Wrong relation sources');
+		assert(rels.every(x=>x.trg=='YamahaRefaceCS' || x.trg=='YamahaRefaceDX'), 'Error 1.3: Wrong relation target');
+	}
+
+	{let rels = kb.relationsByTarget.YamahaRefaceCS['included by'];
+		assert(rels!=null, 'Error 1.1: Nothing included');
+		assert(rels.length==1, 'Error 1.11: Bad relations count');
+		assert(rels.every(x=>x.src=='YamahaReface'), 'Error 1.2: Wrong relation sources');
+		assert(rels.every(x=>x.trg=='YamahaRefaceCS'), 'Error 1.3: Wrong relation target');
+	}
+
+});
+</script>
+</head>
+<body></body>
+</html>
