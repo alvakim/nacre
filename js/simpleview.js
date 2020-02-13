@@ -15,7 +15,7 @@ const version = '3.5.1';
 let surfing = [];
 let selectedItems = new Set();
 
-const itemHash = document.location.hash.slice(1);
+const itemHash = decodeURI(document.location.hash).slice(1);
 
 head.append($($C.html.style({id:'simpleViewBasicStyle'}, '/*simple view basic*/\n', $C.css.stylesheet({
 	body:{
